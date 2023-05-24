@@ -1,35 +1,33 @@
-use druid::widget::Label;
-use druid::widget::Flex;
-use druid::{AppLauncher, Widget, WindowDesc};
-use druid::widget::{Container, Split};
-use druid::Color;
+use druid::{Data, widget::{ Button, Flex}, Widget, WindowDesc, AppLauncher};
 
-fn build_ui() -> impl Widget<()> {
-    Split::columns(
-        Container::new(
-            Flex::column()
-                .with_flex_child(Label::new("first item"), 1.0)
-                .with_flex_child(Label::new("second item"), 1.0)
-                .with_flex_child(Label::new("third item"), 1.0)
-                .with_flex_child(Label::new("fourth item"), 1.0),
-        )
-        .border(Color::grey(0.6), 2.0),
-        Container::new(
-            Flex::column()
-                .with_flex_child(Label::new("Button placeholder"), 1.0)
-                .with_flex_child(Label::new("Textbox placeholder"), 1.0),
-        )
-        .border(Color::grey(0.6), 2.0),
-    )
+#[derive(Clone, Data)]
+struct FunnyData {
+    num: i32
+}
+
+fn foo(){
+    println!("grabando"); 
+}
+
+
+fn bar(){
+    println!("reproduciendo"); 
+}
+
+fn ui_builder() -> impl Widget<FunnyData> {
+
+    let rec_button = Button::new("o")
+        .on_click(|_ctx, _data: &mut FunnyData, _env| foo());
+    let play_button = Button::new(">")
+        .on_click(|_ctx, _data: &mut FunnyData, _env| bar());
+
+    Flex::row().with_child(rec_button).with_child(play_button)
 }
 
 fn main() {
-    let main_window = WindowDesc::new(build_ui())
-        .window_size((600.0, 400.0))
-        .title("My first Druid App");
-    let initial_data = ();
-
+    let main_window = WindowDesc::new(ui_builder())
+        .title("Funny Window");
     AppLauncher::with_window(main_window)
-        .launch(initial_data)
-        .expect("Failed to launch application");
+        .log_to_console()
+        .launch(FunnyData { num: 0 }).unwrap();
 }
